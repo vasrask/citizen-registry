@@ -1,0 +1,42 @@
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+### Logs ###
+*.log
+logs/
+
+### OS Files ###
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+*.class
+
+### Backup / Temporary ###
+*~
+*.swp
+*.tmp
+
+### Tomcat (installed or extracted) ###
+tomcat/
+**/apache-tomcat-*/
