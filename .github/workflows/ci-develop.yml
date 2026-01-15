@@ -24,7 +24,7 @@ jobs:
         run: mvn clean test
 
       - name: Run integration tests
-        run: mvn verify -pl rest-integration-tests -am
+        run: mvn verify -pl rest,rest-integration-tests -am
 
       - name: Upload unit test reports
         uses: actions/upload-artifact@v4
