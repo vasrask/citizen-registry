@@ -1,0 +1,64 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: citizen-db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+
+    volumes:
+      - citizen-data:/var/lib/mysql
+      - ./setup.sql:/docker-entrypoint-initdb.d/01-setup.sql:ro
+
+    networks:
+      - citizen-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: citizen-api:latest
+    container_name: citizen-api
+    restart: unless-stopped
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      DB_URL: "jdbc:mysql://citizen-db:3306/${MYSQL_DATABASE}?sslMode=DISABLED&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      DB_USER: ${MYSQL_USER:?MYSQL_USER is required}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+
+    ports:
+      - "8080:8080"
+
+    networks:
+      - citizen-network
+
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  citizen-network:
+    name: citizen-network
+    driver: bridge
+
+volumes:
+  citizen-data:
+    external: true
+    name: citizen-data
