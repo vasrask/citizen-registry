@@ -39,12 +39,19 @@ public class CitizenResource {
 
     @PUT
     @Path("{registryNumber}")
-    public Citizen update(@PathParam("registryNumber") String registryNumber, Citizen c) {
+    public Response update(@PathParam("registryNumber") String registryNumber, Citizen c) {
+
+        if (CitizenRepository.findByRegistryNumber(registryNumber) == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Citizen not found")
+                    .build();
+        }
+
         c.setRegistryNumber(registryNumber);
         CitizenRepository.save(c);
-        return c;
-    }
 
+        return Response.ok(c).build();
+    }
 
     @DELETE
     @Path("{registryNumber}")
